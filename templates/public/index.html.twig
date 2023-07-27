@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Symfony 6 - Mercure - DDEV sandbox</h1>
+    <p>
+        Run `ddev php bin/console app:mercure:run` on the command line, then watch this page for Mercure updates.<br />
+        If you see a block below that changes color, then Mercure updates are working.
+    </p>
+    <div id="mercure-error" style="display: none; margin-top: 1rem; padding: 1rem; border: 1px solid red; color: red; background: #fce2e6;"></div>
+    <div id="mercure-receiver" style="display: none; margin-top: 1rem; width: 20%; height: 100px; border: 2px solid black;"></div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        try {
+            console.log('Attempt Mercure EventSource');
+            const eventSource = new EventSource("{{ mercure('https://sandbox-sf6.ddev.site/channel')|escape('js') }}");
+
+            eventSource.addEventListener("error", (e) => {
+                console.log(e);
+                document.querySelector('#mercure-error').innerText = "An error occurred while attempting to connect.";
+                document.querySelector('#mercure-error').style.display = 'inline-block';
+                document.querySelector('#mercure-receiver').style.display = 'none';
+            });
+
+            eventSource.onmessage = event => {
+                // Will be called every time an update is published by the server.
+                const data = JSON.parse(event.data);
+                console.log(data);
+                document.querySelector('#mercure-receiver').style.backgroundColor = data.color;
+                document.querySelector('#mercure-receiver').style.display = 'block';
+                document.querySelector('#mercure-error').style.display = 'none';
+            }
+        } catch (e) {
+            console.log(e);
+            document.querySelector('#mercure-error').innerText = "An error occurred while attempting to create EventSource.";
+            document.querySelector('#mercure-error').style.display = 'inline-block';
+            document.querySelector('#mercure-receiver').style.display = 'none';
+        }
+    </script>
+{% endblock %}

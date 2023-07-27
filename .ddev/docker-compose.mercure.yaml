@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  mercure:
+    image: dunglas/mercure
+    restart: unless-stopped
+    container_name: "ddev-${DDEV_SITENAME}-mercure-hub"
+    labels:
+      com.ddev.site-name: ${DDEV_SITENAME}
+      com.ddev.approot: ${DDEV_APPROOT}
+    expose:
+      - "3000"
+    environment:
+      VIRTUAL_HOST: $DDEV_HOSTNAME
+      SERVER_NAME: ":3000"
+      HTTP_EXPOSE: "10001:3000"
+      HTTPS_EXPOSE: "10002:3000"
+      MERCURE_PUBLISHER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
+      MERCURE_SUBSCRIBER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
+      MERCURE_EXTRA_DIRECTIVES: |
+        cors_origins https://sandbox-sf6.ddev.site
+    # Comment the following line to disable the development mode
+    command: /usr/bin/caddy run --config /etc/caddy/Caddyfile.dev
+    volumes:
+      - mercure_data:/data
+      - mercure_config:/config
+
+volumes:
+  mercure_data:
+  mercure_config:
