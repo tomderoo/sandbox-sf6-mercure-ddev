@@ -1,10 +1,9 @@
-version: '3'
 
 services:
   mercure:
     image: dunglas/mercure
     restart: unless-stopped
-    container_name: "ddev-${DDEV_SITENAME}-mercure-hub"
+    container_name: "ddev-${DDEV_SITENAME}-mercure"
     labels:
       com.ddev.site-name: ${DDEV_SITENAME}
       com.ddev.approot: ${DDEV_APPROOT}
@@ -19,6 +18,8 @@ services:
       MERCURE_SUBSCRIBER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
       MERCURE_EXTRA_DIRECTIVES: |
         cors_origins https://sandbox-sf6.ddev.site
+#        cors_origins https://sandbox-sf6.ddev.site:3000
+#        cors_origins https://sandbox-sf6.ddev.site:10002
     # Comment the following line to disable the development mode
     command: /usr/bin/caddy run --config /etc/caddy/Caddyfile.dev
     volumes:
